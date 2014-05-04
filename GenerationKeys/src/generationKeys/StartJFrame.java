@@ -105,7 +105,7 @@ public class StartJFrame extends javax.swing.JFrame {
         jButton1.setVisible(false);
         JOptionPane.showMessageDialog(this,
                 "На втором этапе генерации необходимо " + '\n'
-                + "подвигать курсор около 30 секунд." + '\n'
+                + "подвигать курсор около минуты." + '\n'
                 + "Генерация начнётся после нажатия ОК",
                 "2 этап генерации",
                 JOptionPane.INFORMATION_MESSAGE);                       
@@ -181,6 +181,10 @@ public class StartJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
     
+    private void makeMessageAndWait(String s) {
+        JOptionPane.showMessageDialog(this, s, "Скопируйте", JOptionPane.INFORMATION_MESSAGE);        
+    }
+        
     private void generateKeys() throws NoSuchAlgorithmException, NoSuchProviderException {
         SecureRandom rnd = SecureRandom.getInstance("SHA1PRNG", "SUN");
         rnd.setSeed(entropy);
@@ -194,13 +198,7 @@ public class StartJFrame extends javax.swing.JFrame {
         q = BigInteger.probablePrime(1025, rnd);                   
         n = p.multiply(q); 
                         
-        phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
-        
-        //защита от снимка оперативной памяти
-        for (byte i = 0; i < 16; i++)
-            entropy[i] = i;
-        p = BigInteger.probablePrime(1023, rnd);
-        q = BigInteger.probablePrime(1025, rnd);
+        phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));                        
                         
         e = BigInteger.probablePrime(2046, rnd);
         
@@ -208,50 +206,45 @@ public class StartJFrame extends javax.swing.JFrame {
         
         //Проверка, что d больше 512 бит
         if (d.bitLength() < 512)
-            generateKeys();
-        
+            generateKeys();                
+
         StringSelection stringSelection = new StringSelection(d.toString());
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(stringSelection, null);
-
-        JOptionPane.showMessageDialog(this,
-                "В буфере обмена находится 1 часть секретного ключа." + '\n'
-                + "Скопируйте на съёмный носитель и нажмите Ok.",
-                "Скопируйте d",
-                JOptionPane.INFORMATION_MESSAGE);
+        
+        makeMessageAndWait("В буфере обмена находится 1 часть секретного ключа." + '\n'
+                + "Скопируйте на съёмный носитель и нажмите Ok.");
         
         stringSelection = new StringSelection(n.toString());      
         clipboard.setContents(stringSelection, null);
 
-        JOptionPane.showMessageDialog(this,
-                "В буфере обмена находится 2 часть секретного ключа." + '\n'
-                + "Скопируйте на съёмный носитель и нажмите Ok.",
-                "Скопируйте n",
-                JOptionPane.INFORMATION_MESSAGE);
+        makeMessageAndWait("В буфере обмена находится 2 часть секретного ключа." + '\n'
+                + "Скопируйте на съёмный носитель и нажмите Ok.");
         
         stringSelection = new StringSelection(e.toString());      
         clipboard.setContents(stringSelection, null);
 
-        JOptionPane.showMessageDialog(this,
-                "В буфере обмена находится 1 часть открытого ключа." + '\n'
-                + "Скопируйте на съёмный носитель и нажмите Ok.",
-                "Скопируйте e",
-                JOptionPane.INFORMATION_MESSAGE);
-
+        makeMessageAndWait("В буфере обмена находится 1 часть открытого ключа." + '\n'
+                + "Скопируйте на съёмный носитель и нажмите Ok.");
+        
         stringSelection = new StringSelection(n.toString());      
         clipboard.setContents(stringSelection, null);
 
-        JOptionPane.showMessageDialog(this,
-                "В буфере обмена находится 2 часть открытого ключа." + '\n'
-                + "Скопируйте на съёмный носитель и нажмите Oк.",
-                "Скопируйте n",
-                JOptionPane.INFORMATION_MESSAGE);  
+        makeMessageAndWait("В буфере обмена находится 2 часть открытого ключа." + '\n'
+                + "Скопируйте на съёмный носитель и нажмите Oк.");
         
         JOptionPane.showMessageDialog(this,
                 "Ключи сгенерированы, руководство по использованию" + '\n'
                 + "прилагается к данному приложению.",
                 "Успех",
                 JOptionPane.INFORMATION_MESSAGE);  
+        
+        //защита от снимка оперативной памяти
+        for (byte i = 0; i < 16; i++)
+            entropy[i] = i;
+        p = BigInteger.probablePrime(1023, rnd);
+        q = BigInteger.probablePrime(1025, rnd);
+        phi = BigInteger.probablePrime(2046, rnd);
         System.exit(0);
-    }
+    }    
 }
