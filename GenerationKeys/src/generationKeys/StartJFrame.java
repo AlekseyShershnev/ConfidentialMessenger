@@ -95,7 +95,7 @@ public class StartJFrame extends javax.swing.JFrame {
             }
             catch (Exception e) {                
                 JOptionPane.showMessageDialog(this,
-                        "Вводимые числа должны быть в диапозоне [-128,127]",
+                        "Вводимые числа должны быть в диапазоне [-128,127]",
                         "Ошибка",
                         JOptionPane.ERROR_MESSAGE);
                  i--;
